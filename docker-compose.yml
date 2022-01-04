@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      TZ: 'Asia/Tashkent'
+      MONGODB_URI: mongodb://localhost:27017
+      MONGODB_DATABASE: 'fcm-apn-unified-sender'
+    ports:
+      - 8000:5000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:5000/api/v1/monitoring/status/health"]
+      timeout: 3s
+      interval: 3s
+      retries: 3
+    restart: always
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    environment:
+      TZ: 'Asia/Tashkent'
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "printjson(db.runCommand({ping: 1}))"]
+      timeout: 10s
+      interval: 10s
+      retries: 3
+      start_period: 5s
+    restart: always
