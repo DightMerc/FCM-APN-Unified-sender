@@ -11,6 +11,8 @@ USER apprunner
 
 EXPOSE 5000
 COPY api api/
+COPY certs certs/
+
 COPY server.py .
 
 CMD ["python", "server.py"]

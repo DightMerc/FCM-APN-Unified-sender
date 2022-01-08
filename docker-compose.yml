@@ -4,10 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      TZ: 'Asia/Tashkent'
-      MONGODB_URI: mongodb://localhost:27017
-      MONGODB_DATABASE: 'fcm-apn-unified-sender'
+    env_file:
+      - .env
     ports:
       - 8000:5000
     depends_on:
@@ -24,8 +22,8 @@ services:
     image: mongo:latest
     ports:
       - 27017:27017
-    environment:
-      TZ: 'Asia/Tashkent'
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD", "mongo", "--eval", "printjson(db.runCommand({ping: 1}))"]
       timeout: 10s
