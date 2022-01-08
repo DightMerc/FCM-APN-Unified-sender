@@ -1,5 +1,6 @@
 import logging
 import os
+import uuid
 from dataclasses import asdict
 from datetime import datetime
 from json import JSONDecodeError
@@ -22,11 +23,21 @@ routes = web.RouteTableDef()
 @routes.get("/api/v1/notifications")
 async def get_notifications(request):
     db: AsyncIOMotorClient = request.app["db"]
-    cursor = db.notifications.find({})
+    cursor = db.notifications.find({}, sort=[("created_at", -1)])
     notifications = await cursor.to_list(length=100)
-    for document in notifications:
-        logger.info(document)
     content = {"notifications": parse_json(notifications)}
+    return web.json_response(content)
+
+
+@routes.get("/api/v1/notifications/{id}")
+async def get_notification(request):
+    db: AsyncIOMotorClient = request.app["db"]
+    logger.info(f"Try to find notification with id {request.match_info['id']}")
+    notification = await db.notifications.find_one({"id": request.match_info["id"]})
+    if not notification:
+        logger.info(f"Notification with id {request.match_info['id']} not found")
+        return web.json_response({"error": "Notification not found"}, status=404)
+    content = parse_json(notification)
     return web.json_response(content)
 
 
@@ -46,27 +57,20 @@ async def post_notifications(request):
 
     response, status = await notifications.send(notification)
     if status != 200:
+        notification.status = "failed"
         return web.json_response({"error": response}, status=status)
     elif notification.type == "ANDROID" and response["results"][0].get("error"):
+        notification.status = "failed"
         return web.json_response(
             {"error": response["results"][0].get("error")}, status=400
         )
     else:
         notification.status = "sent"
-
     notification.response = response
     notification.response_status = status
     notification.ios_bundle_id = os.environ.get("APNS_TOPIC")
     notification.created_at = datetime.utcnow()
-
-    document = asdict(notification)
-
-    await db.notifications.insert_one(document)
-
-    document["created_at"] = datetime.strftime(
-        document["created_at"], "%Y-%m-%d %H:%M:%S"
-    )
-    document["_id"] = str(document["_id"])
-
-    content = {"notification": document}
+    notification.id = str(uuid.uuid4())
+    inserted_id = (await db.notifications.insert_one(asdict(notification))).inserted_id
+    content = parse_json(await db.notifications.find_one({"_id": inserted_id}))
     return web.json_response(content)

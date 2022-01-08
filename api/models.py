@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Optional, Dict
 
 
@@ -14,3 +13,4 @@ class Notification:
     response: Optional[Dict] = None
     response_status: Optional[int] = None
     status: Optional[str] = None
+    id: Optional[str] = None

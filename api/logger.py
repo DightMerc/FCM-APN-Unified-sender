@@ -5,11 +5,11 @@ from aiohttp.abc import AbstractAccessLogger
 logging_format = (
     "[%(asctime)s.%(msecs)03d][%(module)s.%(funcName)s][%(levelname)s] %(message)s"
 )
-datefmt = "%Y-%m-%dT%H:%M:%S"
+date_format = "%Y-%m-%dT%H:%M:%S"
 
 
 def configure_logging():
-    logging.basicConfig(level=logging.INFO, format=logging_format, datefmt=datefmt)
+    logging.basicConfig(level=logging.INFO, format=logging_format, datefmt=date_format)
 
 
 class AccessLogger(AbstractAccessLogger):
