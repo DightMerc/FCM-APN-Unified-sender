@@ -12,7 +12,7 @@ from api.middlewares import access_token_middleware
 async def create_app() -> web.Application:
     app = web.Application()
     app["db"] = await connect_mongodb(
-        os.environ.get("MONGODB_URI", "mongodb:27017"),
+        os.environ.get("MONGODB_URI", "mongodb:47017"),
         os.environ.get("MONGODB_DATABASE", "fcm-apn-unified-sender"),
     )
 
