@@ -16,6 +16,7 @@ services:
       timeout: 120s
       interval: 120s
       retries: 3
+      start_period: 120s
     restart: always
 
   mongodb:
