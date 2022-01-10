@@ -11,13 +11,13 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-#    healthcheck:
-#      test: ["CMD", "curl", "http://localhost:5000/api/v1/monitoring/status/health"]
-#      timeout: 120s
-#      interval: 120s
-#      retries: 3
-#      start_period: 120s
-#    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:5000/api/v1/monitoring/status/health"]
+      timeout: 10s
+      interval: 10s
+      retries: 5
+      start_period: 20s
+    restart: always
 
   mongodb:
     image: mongo:4.4.6
