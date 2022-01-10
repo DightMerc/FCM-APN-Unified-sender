@@ -20,7 +20,7 @@ services:
 #    restart: always
 
   mongodb:
-    image: mongo:latest
+    image: mongo:4.4.6
     ports:
       - ${MONGO_PORT}:27017
     env_file:
