@@ -13,8 +13,8 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "http://localhost:5000/api/v1/monitoring/status/health"]
-      timeout: 3s
-      interval: 3s
+      timeout: 120s
+      interval: 120s
       retries: 3
     restart: always
 
