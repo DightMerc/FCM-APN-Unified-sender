@@ -73,4 +73,7 @@ async def post_notifications(request):
     notification.id = str(uuid.uuid4())
     inserted_id = (await db.notifications.insert_one(asdict(notification))).inserted_id
     content = parse_json(await db.notifications.find_one({"_id": inserted_id}))
+    content["created_at"] = str(content["created_at"]["$date"])
+    content["_id"] = str(content["_id"]["$oid"])
+
     return web.json_response(content)
