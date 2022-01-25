@@ -53,6 +53,7 @@ async def post_notifications(request):
     except JSONDecodeError as e:
         logger.error(e)
         return web.json_response({"error": e.msg}, status=400)
+    data["type"] = data["type"].upper()
     notification = Notification(**data)
 
     response, status = await notifications.send(notification)
